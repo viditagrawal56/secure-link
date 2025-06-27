@@ -33,6 +33,7 @@
       "binding": "DB",
       "database_name": "secure-link-db",
       "database_id": "daa38f6f-ae4b-4e9d-80c6-601cf8ccdc3c",
+      "migrations_dir": "drizzle",
     },
   ],
   /**
