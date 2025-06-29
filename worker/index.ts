@@ -1,11 +1,28 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { auth } from "./auth";
+import { requireAuth } from "./middleware/middleware";
+import type { Bindings, Variables } from "./types";
 
-type Bindings = {
-  ASSETS: Fetcher;
-  DB: D1Database;
-};
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-const app = new Hono<{ Bindings: Bindings }>();
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:5173"], // TODO: Add the worker domain
+    credentials: true,
+  })
+);
+
+app.on(["POST", "GET"], "/api/auth/**", async (c) => {
+  const authHandler = auth(c.env.DB);
+  return authHandler.handler(c.req.raw);
+});
+
+app.get("/api/profile", requireAuth, async (c) => {
+  const user = c.get("user");
+  return c.json({ user });
+});
 
 app.get("/api/*", (c) => {
   return c.json({ name: "this is from hono" });
