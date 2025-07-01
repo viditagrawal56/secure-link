@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Lock,
   Users,
   ChevronRight,
-  Link,
+  Link as LinkIcon,
   Share2,
 } from "lucide-react";
 
@@ -30,11 +30,14 @@ function Home() {
                 the people you choose.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <button className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center cursor-pointer">
+                <Link
+                  to="/signup"
+                  className="px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center "
+                >
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </button>
-                <button className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-md border border-indigo-100 hover:bg-indigo-50 transition duration-300 cursor-pointer">
+                </Link>
+                <button className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-md border border-indigo-100 hover:bg-indigo-50 transition duration-300">
                   Learn More
                 </button>
               </div>
@@ -126,7 +129,7 @@ function Home() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50 p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300">
               <div className="bg-indigo-100 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-6">
-                <Link className="h-7 w-7 text-indigo-600" />
+                <LinkIcon className="h-7 w-7 text-indigo-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 Link Open Notifications
@@ -301,7 +304,7 @@ function Home() {
               Join thousands of users who trust our platform for secure,
               authenticated link sharing.
             </p>
-            <button className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 transition duration-300 flex items-center mx-auto cursor-pointer">
+            <button className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 transition duration-300 flex items-center mx-auto">
               Get Started Now
               <ChevronRight className="ml-2 h-5 w-5" />
             </button>
