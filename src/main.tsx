@@ -5,6 +5,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 import "./index.css";
+import { ToastContainer } from "react-toastify";
 
 const queryClient = new QueryClient();
 const router = createRouter({ routeTree });
@@ -19,6 +20,12 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="bottom-right"
+        pauseOnHover
+        autoClose={3000} // 3s
+        theme="dark"
+      />
     </QueryClientProvider>
   </StrictMode>
 );
