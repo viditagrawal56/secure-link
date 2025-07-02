@@ -1,69 +1,135 @@
-# React + TypeScript + Vite
+# SecureLink - Secure URL Shortener
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SecureLink is a modern, secure URL shortening service. It provides features like authentication-protected links and email notifications.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Secure Short Links**: Create shortened URLs with optional authentication protection
+- **User Authentication**: Secure user registration and login system
+- **Access Control**: Control who can access your shortened links
+- **Email Notifications**: Get notified when protected links are accessed
+- **Dashboard**: User-friendly dashboard to manage all your links
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+- **TanStack Router** - Type-safe routing
+- **TanStack Query** - Data fetching and state management
+- **React Hook Form** - Form handling with validation
+- **React Toastify** - Toast notifications
+- **Zod** - Schema validation
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
+- **Hono** - Fast web framework for Cloudflare Workers
+- **Better Auth** - Authentication library
+- **Drizzle ORM** - Type-safe database ORM
+- **Cloudflare D1** - SQLite-compatible database
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Infrastructure
+- **Cloudflare Workers** - Serverless runtime
+- **Cloudflare D1** - Database
+- **Vite** - Build tool and dev server
+- **TypeScript** - Type safety
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- Cloudflare account
+- Wrangler CLI
+
+## Local Setup Instructions
+
+### 1. Clone and Install Dependencies
+
+```bash
+git clone <repository-url>
+cd secure-link
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install Wrangler CLI (if not already installed)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm install -g wrangler
+```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Authenticate with Cloudflare
+
+```bash
+wrangler login
+```
+
+### 4. Environment Variables
+
+Rename `.env.sample` file in the root directory to `.env` and add the mentioned tokens:
+
+```env
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_DATABASE_ID=your_database_id
+CLOUDFLARE_D1_TOKEN=your_d1_token
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=base_url_of_your_app
+```
+
+### 5. Database Setup
+
+#### Create D1 Database (if not exists)
+```bash
+wrangler d1 create secure-link-db
+```
+
+#### Generate Database Schema
+```bash
+npm run db:generate
+```
+
+#### Run Migrations
+
+For development:
+```bash
+npm run db:migrate:dev
+```
+
+For production:
+```bash
+npm run db:migrate:prod
+```
+
+## Development
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+This will start:
+- Vite dev server for the frontend
+- Local Cloudflare Workers environment
+- Local D1 database
+
+The application will be available at `http://localhost:5173`
+
+### Database Management
+
+#### View Database (Drizzle Studio)
+
+For development database:
+```bash
+npm run db:studio:dev
+```
+
+For production database:
+```bash
+npm run db:studio:prod
+```
+
+#### Create New Migration
+
+After modifying the schema in `worker/db/schema.ts`:
+
+```bash
+npm run db:generate
+npm run db:migrate:dev
 ```
