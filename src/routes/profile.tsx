@@ -7,14 +7,14 @@ import {
 import { getSession, signOut, useSession } from "../lib/auth-client";
 
 export const Route = createFileRoute("/profile")({
-  component: RouteComponent,
+  component: Profile,
   beforeLoad: async () => {
     const session = await getSession();
-    if (!session) throw redirect({ to: "/signin" });
+    if (!session || session.data == null) throw redirect({ to: "/signin" });
   },
 });
 
-function RouteComponent() {
+function Profile() {
   const { data: session, isPending, error } = useSession();
 
   const router = useRouter();
