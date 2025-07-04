@@ -9,19 +9,62 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:5173"], // TODO: Add the worker domain
+    origin: [
+      "http://localhost:5173",
+      "https://testing.secure-link.workers.dev",
+    ], // TODO: Add the worker domain
     credentials: true,
   })
 );
 
+app.onError((err, c) => {
+  console.log("Error encountered:", err);
+  return c.json({ error: "Internal Server Error", message: err.message }, 500);
+});
+
 app.on(["POST", "GET"], "/api/auth/**", async (c) => {
-  const authHandler = auth(c.env.DB);
-  return authHandler.handler(c.req.raw);
+  try {
+    const authHandler = auth(c.env.DB);
+    return await authHandler.handler(c.req.raw);
+  } catch (err) {
+    if (err instanceof Error) {
+      console.log("Error during authentication:", err);
+      return c.json(
+        { error: "Authentication Error", message: err.message },
+        500
+      );
+    } else {
+      console.log("Unknown error during authentication:", err);
+      return c.json(
+        { error: "Authentication Error", message: "An unknown error occurred" },
+        500
+      );
+    }
+  }
 });
 
 app.get("/api/profile", requireAuth, async (c) => {
-  const user = c.get("user");
-  return c.json({ user });
+  try {
+    const user = c.get("user");
+    return c.json({ user });
+  } catch (err) {
+    if (err instanceof Error) {
+      console.log("Error fetching user profile:", err);
+      return c.json(
+        { error: "Failed to fetch user profile", message: err.message },
+        500
+      );
+    } else {
+      console.log("Unknown error while fetching user profile:", err);
+      return c.json(
+        {
+          error: "Profile Fetching Error",
+          message: "An unknown error occurred",
+        },
+        500
+      );
+    }
+  }
 });
 
 app.get("/api/*", (c) => {

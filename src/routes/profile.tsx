@@ -24,7 +24,7 @@ function Profile() {
       await signOut();
       router.navigate({ to: "/signin" });
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.log("Logout failed:", err);
     }
   };
 

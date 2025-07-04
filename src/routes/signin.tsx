@@ -64,6 +64,7 @@ function SignIn() {
 
       if (result.error) {
         toast.error(result.error.message || "Login failed");
+        console.log(result.error.message);
         return;
       }
 
@@ -71,6 +72,7 @@ function SignIn() {
       router.navigate({ to: "/profile" });
     } catch (err) {
       toast.error("An unexpected error occurred.");
+      console.log("Error during sign-in:", err);
     } finally {
       setIsLoading(false);
     }
