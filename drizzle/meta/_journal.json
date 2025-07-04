@@ -8,6 +8,13 @@
       "when": 1751454611498,
       "tag": "0000_perfect_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1751656108031,
+      "tag": "0001_nifty_talisman",
+      "breakpoints": true
     }
   ]
 }
