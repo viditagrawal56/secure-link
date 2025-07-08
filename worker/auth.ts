@@ -13,6 +13,14 @@ export const auth = (db: D1Database) =>
       enabled: true,
       requireEmailVerification: false,
     },
+    logger: {
+      disabled: false,
+      level: "debug",
+      log(level, message, ...args) {
+        if (this.disabled) return;
+        console.log(`[${level.toUpperCase()}] ${message}`, ...args);
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 7, // 7 days
       updateAge: 60 * 60 * 24, // 1 day
