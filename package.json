@@ -30,6 +30,7 @@
 		"drizzle-orm": "^0.44.2",
 		"hono": "^4.8.2",
 		"lucide-react": "^0.523.0",
+		"nanoid": "^5.1.5",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-hook-form": "^7.59.0",
