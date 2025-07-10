@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSession } from "../lib/auth-client";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,10 +11,9 @@ export const Route = createFileRoute("/shorten")({
 
 interface ShortenResponse {
   id: string;
-  shortCode: string;
   originalUrl: string;
+  isProtected?: boolean;
   shortUrl: string;
-  clickCount: number;
   createdAt: string;
 }
 
@@ -24,7 +23,10 @@ function RouteComponent() {
   const [shortenedUrl, setShortenedUrl] = useState<ShortenResponse | null>(
     null
   );
+  const [isProtected, setIsProtected] = useState(false);
+  const [authorizedEmails, setAuthorizedEmails] = useState("");
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const shortenMutation = useMutation({
     mutationFn: async (url: string) => {
@@ -34,7 +36,14 @@ function RouteComponent() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({
+          url,
+          isProtected,
+          authorizedEmails: authorizedEmails
+            .split(",")
+            .map((email) => email.trim())
+            .filter(Boolean),
+        }),
       });
 
       if (!response.ok) {
@@ -49,6 +58,7 @@ function RouteComponent() {
       setUrl("");
       queryClient.invalidateQueries({ queryKey: ["urls"] });
       toast.success("URL shortened successfully!");
+      router.navigate({ to: "/profile" });
     },
     onError: (error) => {
       toast.error(error.message);
@@ -140,7 +150,31 @@ function RouteComponent() {
                   disabled={shortenMutation.isPending}
                 />
               </div>
-
+              <div className="flex items-center gap-2">
+                <input
+                  id="isProtected"
+                  type="checkbox"
+                  checked={isProtected}
+                  onChange={(e) => setIsProtected(e.target.checked)}
+                />
+                <label htmlFor="isProtected" className="text-white">
+                  Make this URL protected
+                </label>
+              </div>
+              {isProtected && (
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Authorized Emails (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={authorizedEmails}
+                    onChange={(e) => setAuthorizedEmails(e.target.value)}
+                    placeholder="user1@example.com, user2@example.com"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={shortenMutation.isPending || !url.trim()}
@@ -195,8 +229,19 @@ function RouteComponent() {
                   </div>
                   <div className="text-sm text-green-700">
                     <span className="font-medium">Original URL:</span>{" "}
-                    <span className="font-mono">
+                    <a
+                      href={shortenedUrl.originalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-mono text-sm"
+                    >
                       {shortenedUrl.originalUrl}
+                    </a>
+                  </div>
+                  <div className="text-sm text-green-700">
+                    <span className="font-medium">Security:</span>{" "}
+                    <span className="font-mono">
+                      {shortenedUrl.isProtected ? "Protected" : "Public"}
                     </span>
                   </div>
                 </div>

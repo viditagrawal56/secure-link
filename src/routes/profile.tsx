@@ -20,10 +20,9 @@ export const Route = createFileRoute("/profile")({
 
 interface ShortUrl {
   id: string;
-  shortCode: string;
   originalUrl: string;
+  isProtected?: boolean;
   shortUrl: string;
-  clickCount: number;
   createdAt: string;
 }
 
@@ -221,6 +220,16 @@ function Profile() {
                         {url.originalUrl}
                       </a>
                     </div>
+                    <div className="text-sm text-gray-300 mt-2">
+                      <span>Security: </span>
+                      <span
+                        className={
+                          url.isProtected ? "text-yellow-400" : "text-green-400"
+                        }
+                      >
+                        {url.isProtected ? "Protected" : "Public"}
+                      </span>{" "}
+                    </div>
                   </div>
                   <div className="flex items-center text-gray-400 text-sm gap-4 ml-4">
                     <span>Created: {formatDate(url.createdAt)}</span>
@@ -246,6 +255,12 @@ function Profile() {
                 </div>
               </div>
             ))}
+            <Link
+              to="/shorten"
+              className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+            >
+              Create URL
+            </Link>
           </div>
         )}
       </div>
