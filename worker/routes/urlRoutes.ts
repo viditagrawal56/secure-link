@@ -151,24 +151,7 @@ urlRoutes.get("/verify-access/:token", async (c) => {
     const verification = await urlService.verifyAccessToken(token);
 
     if (!verification.success) {
-      const errorPageHtml = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Access Denied - Secure Link</title>
-        </head>
-        <body>
-          <div>
-            <h1>Access Denied</h1>
-            <p>${verification.error}</p>
-          </div>
-        </body>
-        </html>
-      `;
-
-      return c.html(errorPageHtml, 403);
+      return c.redirect("/access-denied");
     }
 
     return c.redirect(verification.originalUrl!);
