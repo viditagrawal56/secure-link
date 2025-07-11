@@ -52,7 +52,7 @@ function RequestAccess() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="glass-effect max-w-lg w-full p-8 rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold text-white mb-4 text-center">
           Protected Link

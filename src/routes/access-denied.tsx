@@ -6,7 +6,7 @@ export const Route = createFileRoute("/access-denied")({
 
 function AccessDenied() {
   return (
-    <div className="flex flex-col min-h-screen gradient-bg">
+    <div className="flex flex-col min-h-screen">
       <div className="flex-grow flex items-center justify-center px-4 pt-24 pb-12">
         <div className="glass-effect max-w-lg w-full p-8 rounded-xl shadow-lg text-center">
           <h1 className="text-3xl font-bold text-white mb-4">Access Denied</h1>
