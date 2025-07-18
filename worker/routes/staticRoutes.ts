@@ -10,7 +10,6 @@ staticRoutes.get("/s/:shortCode", async (c) => {
     const urlService = new UrlService(c.env.DB);
 
     const url = await urlService.getUrlByShortCode(shortCode);
-
     if (!url) {
       return c.text("URL not found", 404);
     }
@@ -27,8 +26,6 @@ staticRoutes.get("/s/:shortCode", async (c) => {
     return c.text("Internal Server Error", 500);
   }
 });
-
-export { staticRoutes };
 
 staticRoutes.get("*", async (c) => {
   // Try to serve the static asset first
@@ -50,3 +47,5 @@ staticRoutes.get("*", async (c) => {
 
   return c.text("Not found", 404);
 });
+
+export { staticRoutes };

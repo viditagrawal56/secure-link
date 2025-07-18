@@ -4,17 +4,57 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "testing",
+  "name": "secure-link",
   "main": "worker/index.ts",
-  "compatibility_date": "2024-09-23",
+  "compatibility_date": "2025-05-13",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "single-page-application",
+    "not_found_handling": "none",
   },
   "observability": {
     "enabled": true,
+  },
+  "vars": {
+    "VITE_BASE_URL": "http://127.0.0.1:8787",
+    "CLOUDFLARE_ENV": "development",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "securelink-dev",
+      "database_id": "25162ba0-bc4b-4aeb-a868-2231da652365",
+    },
+  ],
+  "env": {
+    "staging": {
+      "vars": {
+        "VITE_BASE_URL": "https://secure-link-staging.secure-link.workers.dev",
+        "CLOUDFLARE_ENV": "staging",
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "securelink-staging",
+          "database_id": "7d3e4f1c-c0fe-447a-a196-6fe832479c95",
+        },
+      ],
+    },
+    "production": {
+      "vars": {
+        "VITE_BASE_URL": "https://secure-link-production.secure-link.workers.dev",
+        "CLOUDFLARE_ENV": "production",
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "securelink-prod",
+          "database_id": "0f94cb67-005f-4177-aac4-dfd761489244",
+        },
+      ],
+    },
   },
   /**
    * Smart Placement
@@ -28,22 +68,18 @@
    * databases, object storage, AI inference, real-time communication and more.
    * https://developers.cloudflare.com/workers/runtime-apis/bindings/
    */
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "secure-link-db",
-      "database_id": "daa38f6f-ae4b-4e9d-80c6-601cf8ccdc3c",
-      "migrations_dir": "drizzle",
-    },
-  ],
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "secure-link-db",
+  //     "database_id": "daa38f6f-ae4b-4e9d-80c6-601cf8ccdc3c",
+  //     "migrations_dir": "drizzle",
+  //   },
+  // ],
   /**
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
    */
-  "vars": {
-    "BETTER_AUTH_URL": "https://testing.secure-link.workers.dev",
-    "NODE_ENV": "production",
-  },
   /**
    * Note: Use secrets to store sensitive data.
    * https://developers.cloudflare.com/workers/configuration/secrets/

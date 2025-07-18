@@ -9,4 +9,7 @@ export type Bindings = {
   ASSETS: Fetcher;
   DB: D1Database;
   RESEND_API_KEY: string;
+  VITE_BASE_URL: string;
+  CLOUDFLARE_ENV: string;
+  BETTER_AUTH_SECRET: string;
 };

@@ -5,9 +5,9 @@ import type { Bindings, Variables } from "../types";
 export const requireAuth: MiddlewareHandler<{
   Bindings: Bindings;
   Variables: Variables;
-}> = async (c: any, next: any) => {
+}> = async (c, next) => {
   try {
-    const authHandler = auth(c.env.DB);
+    const authHandler = auth(c.env);
     const session = await authHandler.api.getSession({
       headers: c.req.raw.headers,
     });
