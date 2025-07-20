@@ -34,6 +34,7 @@
         "VITE_BASE_URL": "https://secure-link-staging.secure-link.workers.dev",
         "CLOUDFLARE_ENV": "staging",
       },
+      "observability": { "enabled": true },
       "d1_databases": [
         {
           "binding": "DB",
@@ -47,6 +48,7 @@
         "VITE_BASE_URL": "https://secure-link-production.secure-link.workers.dev",
         "CLOUDFLARE_ENV": "production",
       },
+      "observability": { "enabled": true },
       "d1_databases": [
         {
           "binding": "DB",

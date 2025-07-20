@@ -5,11 +5,9 @@ console.log("[AUTH CLIENT] base url is:", baseURL);
 if (!baseURL) {
   throw new Error("VITE_BASE_URL is not defined");
 }
+
 export const authClient = createAuthClient({
   baseURL, //TODO: Add the worker domain
-  fetchOptions: {
-    credentials: "include",
-  },
 });
 
 export const { signIn, signUp, signOut, useSession, getSession } = authClient;

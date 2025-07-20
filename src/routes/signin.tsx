@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Mail, Lock } from "lucide-react";
+import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
 
 export const Route = createFileRoute("/signin")({
   component: SignIn,
@@ -57,22 +58,20 @@ function SignIn() {
     setIsLoading(true);
 
     try {
-      const result = await signIn.email({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (result.error) {
-        toast.error(result.error.message || "Login failed");
-        console.log(result.error.message);
-        return;
-      }
-
-      toast.success("Logged in successfully!");
+      await signIn.email(
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          onSuccess: () => handleAuthSuccess("Logged in successfully!"),
+          onError: handleAuthError,
+        }
+      );
       router.navigate({ to: "/profile" });
     } catch (err) {
-      toast.error("An unexpected error occurred.");
-      console.log("Error during sign-in:", err);
+      toast.error("Unexpected error during sign-in");
+      console.error("Unexpected error during sign-in:", err);
     } finally {
       setIsLoading(false);
     }
