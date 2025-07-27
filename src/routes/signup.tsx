@@ -12,6 +12,7 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { CheckCircle, Lock, Mail, User, XCircle } from "lucide-react";
 import { useState } from "react";
+import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
 
 export const Route = createFileRoute("/signup")({
   component: SignupForm,
@@ -70,21 +71,21 @@ function SignupForm() {
     setIsLoading(true);
 
     try {
-      const result = await signUp.email({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      });
-
-      if (result.error) {
-        toast.error(result.error.message || "Sign up failed");
-        return;
-      }
-
-      toast.success("Account created successfully!");
+      await signUp.email(
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        },
+        {
+          onSuccess: () => handleAuthSuccess("Account created successfully!"),
+          onError: handleAuthError,
+        }
+      );
       router.navigate({ to: "/profile" });
     } catch (err) {
-      toast.error("An unexpected error occurred.");
+      toast.error("Unexpected error during sign-up");
+      console.error("Unexpected error during sign-up:", err);
     } finally {
       setIsLoading(false);
     }

@@ -4,17 +4,20 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"build": "tsc -b && vite build",
+		"dev": "tsc -b && vite build --mode development && wrangler dev",
+		"dev:remote": "tsc -b && vite build --mode development && wrangler dev --remote",
 		"lint": "eslint .",
 		"preview": "npm run build && vite preview",
-		"deploy": "npm run build && wrangler deploy",
 		"cf-typegen": "wrangler types",
+		"deploy:staging": "tsc -b && vite build --mode staging && wrangler deploy",
+		"deploy:prod": "tsc -b && vite build --mode production && wrangler deploy",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate:dev": "drizzle-kit migrate",
-		"db:migrate:prod": "cross-env NODE_ENV=production drizzle-kit migrate",
-		"db:studio:dev": "drizzle-kit studio",
-		"db:studio:prod": "cross-env NODE_ENV=production drizzle-kit studio"
+		"db:migrate:dev": "cross-env CLOUDFLARE_ENV=development drizzle-kit migrate",
+		"db:migrate:staging": "cross-env CLOUDFLARE_ENV=staging drizzle-kit migrate",
+		"db:migrate:prod": "cross-env CLOUDFLARE_ENV=production drizzle-kit migrate",
+		"db:studio:dev": "cross-env CLOUDFLARE_ENV=development drizzle-kit studio",
+		"db:studio:staging": "cross-env CLOUDFLARE_ENV=staging drizzle-kit studio",
+		"db:studio:prod": "cross-env CLOUDFLARE_ENV=production drizzle-kit studio"
 	},
 	"dependencies": {
 		"@hono/zod-validator": "^0.7.0",
@@ -25,9 +28,9 @@
 		"@tanstack/react-router": "^1.121.34",
 		"@tanstack/react-router-devtools": "^1.121.34",
 		"bcryptjs": "^3.0.2",
-		"better-auth": "^1.2.12",
+		"better-auth": "^1.2.8",
 		"dotenv": "^16.6.1",
-		"drizzle-orm": "^0.44.2",
+		"drizzle-orm": "^0.44.3",
 		"hono": "^4.8.2",
 		"lucide-react": "^0.523.0",
 		"nanoid": "^5.1.5",
@@ -40,7 +43,7 @@
 		"zod": "^3.25.67"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.7.5",
+		"@cloudflare/vite-plugin": "^1.9.4",
 		"@eslint/js": "^9.25.0",
 		"@tanstack/router-plugin": "^1.121.34",
 		"@types/bcryptjs": "^2.4.6",
@@ -59,6 +62,6 @@
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.30.1",
 		"vite": "^6.3.5",
-		"wrangler": "^4.22.0"
+		"wrangler": "^4.24.3"
 	}
 }

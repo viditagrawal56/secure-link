@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
@@ -17,15 +16,13 @@ declare module "@tanstack/react-router" {
 }
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ToastContainer
-        position="bottom-right"
-        pauseOnHover
-        autoClose={3000} // 3s
-        theme="dark"
-      />
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    <ToastContainer
+      position="bottom-right"
+      pauseOnHover
+      autoClose={3000} // 3s
+      theme="dark"
+    />
+  </QueryClientProvider>
 );

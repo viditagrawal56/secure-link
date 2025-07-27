@@ -2,10 +2,29 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "./db/schema";
+import type { Bindings } from "./types";
 
-export const auth = (db: D1Database) =>
-  betterAuth({
-    database: drizzleAdapter(drizzle(db, { schema }), {
+const getTrustedOrigins = (env: Bindings): string[] => {
+  if (env.CLOUDFLARE_ENV === "development")
+    ["http://localhost:8787", "http://127.0.0.1:8787"];
+
+  if (!env.VITE_BASE_URL) {
+    console.log("VITE_BASE_URL is required in staging/production");
+    throw new Error("VITE_BASE_URL is required in staging/production");
+  }
+  return [env.VITE_BASE_URL];
+};
+
+export const auth = (env: Bindings) => {
+  const trustedOrigins = getTrustedOrigins(env);
+
+  const db = drizzle(env.DB);
+
+  //TODO: Logging for easier debugging, remove it later or cap it to dev env
+  console.log("[BetterAuth] Trusted origins:", getTrustedOrigins(env));
+
+  return betterAuth({
+    database: drizzleAdapter(db, {
       provider: "sqlite",
       schema,
     }),
@@ -13,20 +32,7 @@ export const auth = (db: D1Database) =>
       enabled: true,
       requireEmailVerification: false,
     },
-    logger: {
-      disabled: false,
-      level: "debug",
-      log(level, message, ...args) {
-        if (this.disabled) return;
-        console.log(`[${level.toUpperCase()}] ${message}`, ...args);
-      },
-    },
-    session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24, // 1 day
-    },
-    trustedOrigins: [
-      "http://localhost:5173",
-      "https://testing.secure-link.workers.dev",
-    ], // TODO: Add the worker domain
+    trustedOrigins,
+    secret: env.BETTER_AUTH_SECRET,
   });
+};

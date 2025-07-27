@@ -1,14 +1,13 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import type { Bindings, Variables } from "./types";
-import { corsConfig } from "./config/cors";
+import { corsConfig } from "./middleware/cors-config";
 import { authRoutes } from "./routes/authRoutes";
 import { urlRoutes } from "./routes/urlRoutes";
 import { staticRoutes } from "./routes/staticRoutes";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-app.use("*", cors(corsConfig));
+app.use("*", corsConfig);
 
 app.onError((err, c) => {
   console.log("Error encountered:", err);
