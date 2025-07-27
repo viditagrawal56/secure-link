@@ -5,6 +5,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { getSession, signUp } from "../lib/auth-client";
+import { PasswordValidation } from "../components/PasswordValidation";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +14,7 @@ import { toast } from "react-toastify";
 import { CheckCircle, Lock, Mail, User, XCircle } from "lucide-react";
 import { useState } from "react";
 import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
+import { passwordSchema } from "../components/PasswordValidation";
 
 export const Route = createFileRoute("/signup")({
   component: SignupForm,
@@ -30,29 +32,26 @@ export const Route = createFileRoute("/signup")({
   },
 });
 
-const signupSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name must be at least 1 character")
-    .max(40, "Name cannot be greater than 40 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .refine((val) => /[A-Z]/.test(val), "Must include an uppercase letter")
-    .refine((val) => /[a-z]/.test(val), "Must include a lowercase letter")
-    .refine((val) => /[0-9]/.test(val), "Must include a number")
-    .refine(
-      (val) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(val),
-      "Must include a special character"
-    ),
-  confirmPassword: z.string(),
-});
+const signupSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Name must be at least 1 character")
+      .max(40, "Name cannot be greater than 40 characters"),
+    email: z.string().email("Invalid email address"),
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormSchema = z.infer<typeof signupSchema>;
 
 function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const {
@@ -64,7 +63,6 @@ function SignupForm() {
     resolver: zodResolver(signupSchema),
   });
 
-  const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
   const onSubmit = async (data: SignupFormSchema) => {
@@ -170,17 +168,14 @@ function SignupForm() {
                   type="password"
                   disabled={isLoading}
                   {...register("password")}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full pl-12 pr-12 py-3 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
-                    errors.password ? "border-red-500" : "border-gray-700"
-                  }`}
+                  className={
+                    "w-full pl-12 pr-12 py-3 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                  }
                 />
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-400">
-                  {errors.password.message}
-                </p>
-              )}
+              <PasswordValidation password={password} />
             </div>
 
             <div>
@@ -204,11 +199,6 @@ function SignupForm() {
                   }`}
                 />
               </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-400">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
               {confirmPassword && password === confirmPassword ? (
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <CheckCircle className="w-4 h-4 mr-1" /> Passwords match

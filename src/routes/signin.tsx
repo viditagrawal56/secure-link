@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { Mail, Lock } from "lucide-react";
 import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
+import { passwordSchema } from "../components/PasswordValidation";
 
 export const Route = createFileRoute("/signin")({
   component: SignIn,
@@ -28,16 +29,7 @@ export const Route = createFileRoute("/signin")({
 
 const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .refine((val) => /[A-Z]/.test(val), "Must include an uppercase letter")
-    .refine((val) => /[a-z]/.test(val), "Must include a lowercase letter")
-    .refine((val) => /[0-9]/.test(val), "Must include a number")
-    .refine(
-      (val) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(val),
-      "Must include a special character"
-    ),
+  password: passwordSchema,
 });
 
 type SigninFormSchema = z.infer<typeof signinSchema>;
@@ -136,11 +128,6 @@ function SignIn() {
                   }`}
                 />
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-400">
-                  {errors.password.message}
-                </p>
-              )}
             </div>
 
             <button
