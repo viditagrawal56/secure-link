@@ -33,6 +33,7 @@ export const Route = createFileRoute("/profile")({
 interface ShortUrl {
   id: string;
   originalUrl: string;
+  notifyOnAccess?: boolean;
   isProtected?: boolean;
   shortUrl: string;
   createdAt: string;
@@ -209,6 +210,7 @@ function Profile() {
                     <th className="px-4 py-3">Short URL</th>
                     <th className="px-4 py-3">Original URL</th>
                     <th className="px-4 py-3">Security</th>
+                    <th className="px-4 py-3">Notifications</th>
                     <th className="px-4 py-3">Created At</th>
                     <th className="px-4 py-3">Actions</th>
                   </tr>
@@ -244,6 +246,13 @@ function Profile() {
                           <span className="text-yellow-400">Protected</span>
                         ) : (
                           <span className="text-green-400">Public</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {url.notifyOnAccess ? (
+                          <span className="text-yellow-400">Enabled</span>
+                        ) : (
+                          <span className="text-green-400">Disabled</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-400">

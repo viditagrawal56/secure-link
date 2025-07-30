@@ -42,4 +42,42 @@ export class EmailService {
       return false;
     }
   }
+
+  async sendAccessNotification(
+    ownerEmail: string,
+    originalUrl: string,
+    visitorEmail?: string
+  ) {
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: ownerEmail,
+        subject: "Your shortened URL was accessed",
+        html: `
+        <html>
+          <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px;">
+            <h2>URL Access Notification</h2>
+            <p>${
+              visitorEmail
+                ? `User with email ${visitorEmail} has accessed your protected URL:`
+                : `Someone has accessed your public URL:`
+            }</p>
+            <p><strong>${originalUrl}</strong></p>
+          </body>
+        </html>
+      `,
+      });
+
+      if (error) {
+        console.error("Resend error:", error);
+        return false;
+      }
+      console.log("Notification email sent:", data);
+
+      return true;
+    } catch (error) {
+      console.error("Error sending notification email:", error);
+      return false;
+    }
+  }
 }

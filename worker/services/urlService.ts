@@ -14,13 +14,21 @@ export class UrlService {
     originalUrl: string,
     userId: string,
     isProtected: boolean = false,
-    authorizedEmails: string[] = []
+    authorizedEmails: string[] = [],
+    notifyOnAccess: boolean = false
   ) {
     const shortCode = await this.generateUniqueShortCode();
 
     const shortUrl = await this.db
       .insert(schema.shortUrls)
-      .values({ id: nanoid(), userId, shortCode, originalUrl, isProtected })
+      .values({
+        id: nanoid(),
+        userId,
+        shortCode,
+        originalUrl,
+        isProtected,
+        notifyOnAccess,
+      })
       .returning();
 
     if (isProtected && authorizedEmails.length > 0) {
@@ -57,6 +65,7 @@ export class UrlService {
       id: url.id,
       shortCode: url.shortCode,
       originalUrl: url.originalUrl,
+      notifyOnAccess: url.notifyOnAccess,
       isProtected: url.isProtected,
       createdAt: url.createdAt,
       authorizedEmails: url.authorizedEmails?.map((ae) => ae.email) || [],
@@ -84,6 +93,7 @@ export class UrlService {
       where: eq(schema.shortUrls.shortCode, shortCode),
       with: {
         authorizedEmails: true,
+        user: true,
       },
     });
 
@@ -128,6 +138,8 @@ export class UrlService {
     shortUrlId?: string;
     email?: string;
     originalUrl?: string;
+    ownerEmail?: string;
+    notifyOnAccess?: boolean;
     error?: string;
   }> {
     const verification = await this.db.query.urlAccessVerification.findFirst({
@@ -136,7 +148,11 @@ export class UrlService {
         eq(schema.urlAccessVerification.used, false)
       ),
       with: {
-        shortUrl: true,
+        shortUrl: {
+          with: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -175,6 +191,8 @@ export class UrlService {
       shortUrlId: verification.shortUrlId,
       email: verification.email,
       originalUrl: verification.shortUrl.originalUrl,
+      ownerEmail: verification.shortUrl.user.email,
+      notifyOnAccess: verification.shortUrl.notifyOnAccess,
     };
   }
 

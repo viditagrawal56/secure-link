@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { UrlService } from "../services/urlService";
+import { EmailService } from "../services/emailService";
 
 const staticRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -8,19 +9,21 @@ staticRoutes.get("/s/:shortCode", async (c) => {
   try {
     const shortCode = c.req.param("shortCode");
     const urlService = new UrlService(c.env.DB);
+    const emailService = new EmailService(c.env.RESEND_API_KEY);
 
     const url = await urlService.getUrlByShortCode(shortCode);
+
     if (!url) {
       return c.text("URL not found", 404);
     }
     if (!url.active) {
       return c.text("URL Inactive", 403);
     }
-    if (!url.isProtected) {
-      return c.redirect(url.originalUrl);
+    if (url.isProtected) {
+      return c.redirect(`/request-access/${shortCode}`);
     }
-
-    return c.redirect(`/request-access/${shortCode}`);
+    await emailService.sendAccessNotification(url.user.email, url.originalUrl);
+    return c.redirect(url.originalUrl);
   } catch (err) {
     console.log("Error accessing URL:", err);
     return c.text("Internal Server Error", 500);

@@ -1,0 +1,1 @@
+ALTER TABLE `short_url` ADD `notify_on_access` integer DEFAULT false NOT NULL;

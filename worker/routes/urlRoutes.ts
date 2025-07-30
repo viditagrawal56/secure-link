@@ -8,6 +8,7 @@ import { EmailService } from "../services/emailService";
 
 const createUrlSchema = z.object({
   url: z.string().url("Please enter a valid URL"),
+  notifyOnAccess: z.boolean().optional().default(false),
   isProtected: z.boolean().optional().default(false),
   authorizedEmails: z.array(z.string().email()).optional().default([]),
 });
@@ -24,7 +25,8 @@ urlRoutes.post(
   zValidator("json", createUrlSchema),
   async (c) => {
     try {
-      const { url, isProtected, authorizedEmails } = c.req.valid("json");
+      const { url, isProtected, authorizedEmails, notifyOnAccess } =
+        c.req.valid("json");
       const user = c.get("user");
       const urlService = new UrlService(c.env.DB);
 
@@ -39,7 +41,8 @@ urlRoutes.post(
         url,
         user.id,
         isProtected,
-        authorizedEmails
+        authorizedEmails,
+        notifyOnAccess
       );
 
       return c.json({
@@ -147,11 +150,21 @@ urlRoutes.get("/verify-access/:token", async (c) => {
   try {
     const token = c.req.param("token");
     const urlService = new UrlService(c.env.DB);
+    const emailService = new EmailService(c.env.RESEND_API_KEY);
 
     const verification = await urlService.verifyAccessToken(token);
 
     if (!verification.success) {
       return c.redirect("/access-denied");
+    }
+
+    // Send notification if enabled
+    if (verification.notifyOnAccess) {
+      await emailService.sendAccessNotification(
+        verification.ownerEmail!,
+        verification.originalUrl!,
+        verification.email
+      );
     }
 
     return c.redirect(verification.originalUrl!);

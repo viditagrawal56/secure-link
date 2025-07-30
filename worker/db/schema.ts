@@ -72,6 +72,9 @@ export const shortUrls = sqliteTable("short_url", {
     .references(() => user.id, { onDelete: "cascade" }),
   shortCode: text("short_code").notNull().unique(),
   originalUrl: text("original_url").notNull(),
+  notifyOnAccess: integer("notify_on_access", { mode: "boolean" })
+    .default(false)
+    .notNull(),
   isProtected: integer("is_protected", { mode: "boolean" })
     .default(false)
     .notNull(),
@@ -111,8 +114,12 @@ export const urlAccessVerification = sqliteTable("url_access_verification", {
 
 // Realtions
 
-export const shortUrlsRelations = relations(shortUrls, ({ many }) => ({
+export const shortUrlsRelations = relations(shortUrls, ({ many, one }) => ({
   authorizedEmails: many(protectedUrlAuthorizedEmails),
+  user: one(user, {
+    fields: [shortUrls.userId],
+    references: [user.id],
+  }),
 }));
 
 export const protectedUrlAuthorizedEmailsRelations = relations(
