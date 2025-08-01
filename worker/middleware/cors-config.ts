@@ -10,7 +10,11 @@ function getCorsOrigins(env: Bindings): string[] {
   }
 
   return isDev
-    ? ["http://localhost:8787", "http://127.0.0.1:8787"]
+    ? [
+        "http://localhost:8787",
+        "http://127.0.0.1:8787",
+        "http://localhost:5173/",
+      ]
     : [env.VITE_BASE_URL];
 }
 
