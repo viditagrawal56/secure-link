@@ -38,7 +38,7 @@ function RequestAccess() {
       setSubmitted(true);
       setEmail("");
     },
-    onError: (err: any) => {
+    onError: (err) => {
       toast.error(err.message || "Something went wrong.");
     },
   });

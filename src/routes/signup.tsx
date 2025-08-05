@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { CheckCircle, Lock, Mail, User, XCircle } from "lucide-react";
 import { useState } from "react";
 import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
-import { passwordSchema } from "../components/PasswordValidation";
+import { passwordSchema } from "../utils/schema";
 
 export const Route = createFileRoute("/signup")({
   component: SignupForm,

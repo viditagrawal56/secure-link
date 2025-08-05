@@ -12,7 +12,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { Mail, Lock } from "lucide-react";
 import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
-import { passwordSchema } from "../components/PasswordValidation";
+import { passwordSchema } from "../utils/schema";
 
 export const Route = createFileRoute("/signin")({
   component: SignIn,
