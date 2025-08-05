@@ -147,9 +147,11 @@ function SignIn() {
           </form>
 
           <div className="mt-8 flex items-center justify-center gap-2">
-            <div className="w-20 bg-gray-400 border-t"></div>
-            <span className="text-gray-400">New to Secure Link?</span>
-            <div className="w-20 bg-gray-400 border-t"></div>
+            <div className="w-20 not-sm:w-14 bg-gray-400 border-t"></div>
+            <span className="text-gray-400 not-sm:text-sm">
+              New to Secure Link?
+            </span>
+            <div className="w-20 not-sm:w-14 bg-gray-400 border-t"></div>
           </div>
           <div className="mt-6 text-center">
             <Link
