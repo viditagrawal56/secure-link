@@ -6,7 +6,11 @@ import type { Bindings } from "./types";
 
 const getTrustedOrigins = (env: Bindings): string[] => {
   if (env.CLOUDFLARE_ENV === "development")
-    ["http://localhost:8787", "http://127.0.0.1:8787"];
+    [
+      "http://localhost:8787",
+      "http://127.0.0.1:8787",
+      "http://localhost:5173/",
+    ];
 
   if (!env.VITE_BASE_URL) {
     console.log("VITE_BASE_URL is required in staging/production");
