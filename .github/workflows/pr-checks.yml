@@ -7,13 +7,13 @@ on:
 
 jobs:
   lint-and-type-check:
-    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    uses: viditagrawal56/secure-link/.github/workflows/setup-and-check.yml@develop
     with:
       node-version: '22'
       run-lint: true
      
   build-test:
-    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    uses: viditagrawal56/secure-link/.github/workflows/setup-and-check.yml@develop
     with:
       node-version: '22'
       run-build-dev: true    
