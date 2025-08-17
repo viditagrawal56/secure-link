@@ -1,0 +1,75 @@
+name: Setup and Check
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version'
+        required: true
+        type: string
+      run-lint:
+        description: 'Run lint and type checks'
+        required: false
+        type: boolean
+        default: true
+      run-build-dev:
+        description: 'Run builds for dev'
+        required: false
+        type: boolean
+        default: false
+      run-build-staging:
+        description: 'Run builds for staging'
+        required: false
+        type: boolean
+        default: false
+      run-build-prod:
+        description: 'Run builds for prod'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  setup-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        if: inputs.run-lint
+        run: npm run lint
+
+      - name: Type check
+        if: inputs.run-lint
+        run: npx tsc --noEmit
+
+      - name: Build for development
+        if: inputs.run-build-dev
+        run: npm run build:dev
+        env:
+          NODE_ENV: development
+
+      - name: Build for staging
+        if: inputs.run-build-staging
+        run: npm run build:staging
+        env:
+          NODE_ENV: staging
+
+      - name: Build for production
+        if: inputs.run-build-prod
+        run: npm run build:prod
+        env:
+          NODE_ENV: production

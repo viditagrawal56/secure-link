@@ -67,7 +67,7 @@ Rename `.env.sample` file in the root directory to `.env` and add the mentioned 
 ```env
 CLOUDFLARE_ACCOUNT_ID=your_account_id
 CLOUDFLARE_DATABASE_ID=your_database_id
-CLOUDFLARE_D1_TOKEN=your_d1_token
+CLOUDFLARE_API_TOKEN=your_api_token
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=base_url_of_your_app
 ```

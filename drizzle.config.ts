@@ -39,7 +39,7 @@ function getEnvironmentConfig() {
         dbCredentials: {
           accountId: required("CLOUDFLARE_ACCOUNT_ID"),
           databaseId: required("CLOUDFLARE_DATABASE_ID_PROD"),
-          token: required("CLOUDFLARE_D1_TOKEN"),
+          token: required("CLOUDFLARE_API_TOKEN"),
         },
       };
     case "staging":
@@ -48,7 +48,7 @@ function getEnvironmentConfig() {
         dbCredentials: {
           accountId: required("CLOUDFLARE_ACCOUNT_ID"),
           databaseId: required("CLOUDFLARE_DATABASE_ID_STAGING"),
-          token: required("CLOUDFLARE_D1_TOKEN"),
+          token: required("CLOUDFLARE_API_TOKEN"),
         },
       };
     default: // development

@@ -1,0 +1,23 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [develop, master]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint-and-type-check:
+    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    with:
+      node-version: '22'
+      run-lint: true
+     
+  build-test:
+    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    with:
+      node-version: '22'
+      run-build-dev: true    
+      run-build-staging: true    
+      run-build-prod: true    
+    
+  ## Add a preview deploy job

@@ -1,0 +1,57 @@
+name: Promote to Master
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  lint-and-type-check:
+    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    with:
+      node-version: '22'
+      run-lint: true
+     
+  build-test:
+    uses: viditagrawal56/secure-link-ci-cd/.github/workflows/setup-and-check.yml@develop
+    with:
+      node-version: '22'
+      run-build-prod: true
+
+  promote-to-master:
+    name: Create PR to Master
+    needs: [lint-and-type-check, build-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Create PR to master
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Release ${{ github.event.inputs.version }}: Promote develop to master`,
+              head: 'develop',
+              base: 'master',
+              body: `## Release Promotion\n\nPromotes develop to master for version ${{ github.event.inputs.version }}.\n\n### Checklist\n- [ ] Staging tests passed\n- [ ] Code review completed\n- [ ] Database migrations reviewed\n- [ ] Ready for production`
+            });
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: ['release', 'production-ready']
+            });
