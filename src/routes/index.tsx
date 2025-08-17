@@ -50,7 +50,6 @@ function Home() {
           <div>
             <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               Secure Your
-              <span className="text-green-500 block">Short Links</span>
             </h1>
           </div>
           <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl sm:max-w-3xl mx-auto">
