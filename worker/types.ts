@@ -8,6 +8,7 @@ export type Variables = {
 export type Bindings = {
   ASSETS: Fetcher;
   DB: D1Database;
+  URL_CACHE: KVNamespace;
   RESEND_API_KEY: string;
   VITE_BASE_URL: string;
   CLOUDFLARE_ENV: string;

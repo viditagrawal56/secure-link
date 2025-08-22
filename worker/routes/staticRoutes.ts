@@ -8,7 +8,8 @@ const staticRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 staticRoutes.get("/s/:shortCode", async (c) => {
   try {
     const shortCode = c.req.param("shortCode");
-    const urlService = new UrlService(c.env.DB);
+
+    const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
     const emailService = new EmailService(c.env.RESEND_API_KEY);
 
     const url = await urlService.getUrlByShortCode(shortCode);
@@ -22,7 +23,13 @@ staticRoutes.get("/s/:shortCode", async (c) => {
     if (url.isProtected) {
       return c.redirect(`/request-access/${shortCode}`);
     }
-    await emailService.sendAccessNotification(url.user.email, url.originalUrl);
+
+    if (url.notifyOnAccess) {
+      await emailService.sendAccessNotification(
+        url.user.email,
+        url.originalUrl
+      );
+    }
     return c.redirect(url.originalUrl);
   } catch (err) {
     console.log("Error accessing URL:", err);
