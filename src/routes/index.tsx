@@ -9,6 +9,7 @@ import {
   Shield,
   Zap,
 } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -16,36 +17,11 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="flex flex-col gap-4 min-h-screen gradient-bg">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-effect">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-white cursor-pointer">
-                <Link to="/">Secure Link</Link>
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/signin"
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                className="hidden sm:block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+      <Navbar />
       {/* Hero Section */}
-      <section className="pt-28 sm:pt-36 pb-16 px-2 sm:px-4">
+      <section className="pb-16 px-2 sm:px-4">
         <div className="max-w-7xl mx-auto text-center">
           <div>
             <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">

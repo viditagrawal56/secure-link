@@ -28,7 +28,7 @@ urlRoutes.post(
       const { url, isProtected, authorizedEmails, notifyOnAccess } =
         c.req.valid("json");
       const user = c.get("user");
-      const urlService = new UrlService(c.env.DB);
+      const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
 
       if (isProtected && (!authorizedEmails || authorizedEmails.length === 0)) {
         return c.json(
@@ -59,7 +59,7 @@ urlRoutes.post(
 urlRoutes.get("/urls", requireAuth, async (c) => {
   try {
     const user = c.get("user");
-    const urlService = new UrlService(c.env.DB);
+    const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
 
     const urls = await urlService.getUserUrls(user.id);
     const baseUrl = new URL(c.req.url).origin;
@@ -80,7 +80,7 @@ urlRoutes.delete("/urls/:id", requireAuth, async (c) => {
   try {
     const id = c.req.param("id");
     const user = c.get("user");
-    const urlService = new UrlService(c.env.DB);
+    const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
 
     await urlService.deleteUrl(id, user.id);
 
@@ -108,8 +108,8 @@ urlRoutes.post(
     try {
       const shortCode = c.req.param("shortCode");
       const { email } = c.req.valid("json");
-      const urlService = new UrlService(c.env.DB);
-      const emailService = new EmailService(c.env.RESEND_API_KEY); //TODO: add this in worker secrets
+      const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
+      const emailService = new EmailService(c.env.RESEND_API_KEY);
 
       const url = await urlService.getUrlByShortCode(shortCode);
 
@@ -149,7 +149,7 @@ urlRoutes.post(
 urlRoutes.get("/verify-access/:token", async (c) => {
   try {
     const token = c.req.param("token");
-    const urlService = new UrlService(c.env.DB);
+    const urlService = new UrlService(c.env.DB, c.env.URL_CACHE);
     const emailService = new EmailService(c.env.RESEND_API_KEY);
 
     const verification = await urlService.verifyAccessToken(token);

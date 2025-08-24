@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Link2, Loader2, Lock, Users, Bell } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute("/shorten")({
   component: RouteComponent,
@@ -67,8 +68,9 @@ function RouteComponent() {
   });
 
   return (
-    <div className="min-h-screen py-16 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen flex flex-col gap-8 ">
+      <Navbar />
+      <div className="max-w-3xl mx-auto p-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
             Shorten Your Link

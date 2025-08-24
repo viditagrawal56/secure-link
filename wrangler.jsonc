@@ -28,6 +28,13 @@
       "database_id": "25162ba0-bc4b-4aeb-a868-2231da652365",
     },
   ],
+  "kv_namespaces": [
+    {
+      "binding": "URL_CACHE",
+      "id": "864fafcf28c14533ae941d778d8518cc",
+      "preview_id": "b829effd90fc419e87aac54ead95416b",
+    },
+  ],
   "env": {
     "staging": {
       "vars": {
@@ -42,6 +49,12 @@
           "database_id": "7d3e4f1c-c0fe-447a-a196-6fe832479c95",
         },
       ],
+      "kv_namespaces": [
+        {
+          "binding": "URL_CACHE",
+          "id": "968c4885f01642dd89ccd0230f5cf4d4",
+        },
+      ],
     },
     "production": {
       "vars": {
@@ -54,6 +67,12 @@
           "binding": "DB",
           "database_name": "securelink-prod",
           "database_id": "0f94cb67-005f-4177-aac4-dfd761489244",
+        },
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "URL_CACHE",
+          "id": "d7d3f0e3eb624f859ff90545440e46c7",
         },
       ],
     },
