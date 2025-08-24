@@ -2,12 +2,17 @@ import { drizzle, DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { CacheService, type CachedUrlData } from "./cacheService";
 
 export class UrlService {
   private db: DrizzleD1Database<typeof schema>;
+  private cache?: CacheService;
 
-  constructor(database: D1Database) {
+  constructor(database: D1Database, kvNameSpace?: KVNamespace) {
     this.db = drizzle(database, { schema });
+    if (kvNameSpace) {
+      this.cache = new CacheService(kvNameSpace);
+    }
   }
 
   async createShortUrl(
@@ -41,6 +46,34 @@ export class UrlService {
       await this.db
         .insert(schema.protectedUrlAuthorizedEmails)
         .values(emailRecords);
+    }
+
+    // Cache the new url
+    if (this.cache) {
+      try {
+        const user = await this.db.query.user.findFirst({
+          where: eq(schema.user.id, userId),
+        });
+
+        if (user) {
+          const cachedData: CachedUrlData = {
+            id: shortUrl[0].id,
+            shortCode: shortUrl[0].shortCode,
+            originalUrl: shortUrl[0].originalUrl,
+            userId: shortUrl[0].userId,
+            isProtected: shortUrl[0].isProtected,
+            notifyOnAccess: shortUrl[0].notifyOnAccess,
+            active: shortUrl[0].active,
+            authorizedEmails: isProtected ? authorizedEmails : [],
+            userEmail: user.email,
+          };
+
+          await this.cache.cacheUrl(shortCode, cachedData);
+          console.log("Cached a new URL");
+        }
+      } catch (error) {
+        console.error("Error caching new URL:", error);
+      }
     }
 
     return {
@@ -86,9 +119,63 @@ export class UrlService {
     }
 
     await this.db.delete(schema.shortUrls).where(eq(schema.shortUrls.id, id));
+
+    if (this.cache) {
+      try {
+        await this.cache.invalidateUrl(url.shortCode);
+      } catch (error) {
+        console.error("Error invalidating URL cache:", error);
+      }
+    }
   }
 
   async getUrlByShortCode(shortCode: string) {
+    if (this.cache) {
+      try {
+        // Check hot URLs first
+        let cachedUrl = await this.cache.getHotUrl(shortCode);
+        if (cachedUrl) {
+          // Increment access count
+          await this.cache.incrementUrlAccess(shortCode);
+
+          return {
+            id: cachedUrl.id,
+            shortCode: cachedUrl.shortCode,
+            originalUrl: cachedUrl.originalUrl,
+            userId: cachedUrl.userId,
+            isProtected: cachedUrl.isProtected,
+            notifyOnAccess: cachedUrl.notifyOnAccess,
+            active: cachedUrl.active,
+            authorizedEmails:
+              cachedUrl.authorizedEmails?.map((email) => ({ email })) || [],
+            user: { email: cachedUrl.userEmail },
+          };
+        }
+
+        // Check regular cache
+        cachedUrl = await this.cache.getCachedUrl(shortCode);
+        if (cachedUrl) {
+          // Increment access count
+          await this.cache.incrementUrlAccess(shortCode);
+          return {
+            id: cachedUrl.id,
+            shortCode: cachedUrl.shortCode,
+            originalUrl: cachedUrl.originalUrl,
+            userId: cachedUrl.userId,
+            isProtected: cachedUrl.isProtected,
+            notifyOnAccess: cachedUrl.notifyOnAccess,
+            active: cachedUrl.active,
+            authorizedEmails:
+              cachedUrl.authorizedEmails?.map((email) => ({ email })) || [],
+            user: { email: cachedUrl.userEmail },
+          };
+        }
+      } catch (error) {
+        console.error("Error reading from cache:", error);
+      }
+    }
+
+    // Cache miss
     const url = await this.db.query.shortUrls.findFirst({
       where: eq(schema.shortUrls.shortCode, shortCode),
       with: {
@@ -96,6 +183,28 @@ export class UrlService {
         user: true,
       },
     });
+
+    // Cache the result
+    if (url && this.cache) {
+      try {
+        const cachedData: CachedUrlData = {
+          id: url.id,
+          shortCode: url.shortCode,
+          originalUrl: url.originalUrl,
+          userId: url.userId,
+          isProtected: url.isProtected,
+          notifyOnAccess: url.notifyOnAccess,
+          active: url.active,
+          authorizedEmails: url.authorizedEmails?.map((ae) => ae.email) || [],
+          userEmail: url.user.email,
+        };
+
+        await this.cache.cacheUrl(shortCode, cachedData);
+        await this.cache.incrementUrlAccess(shortCode);
+      } catch (error) {
+        console.error("Error caching URL from database:", error);
+      }
+    }
 
     return url;
   }

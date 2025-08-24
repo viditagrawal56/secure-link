@@ -15,6 +15,7 @@ import { CheckCircle, Lock, Mail, User, XCircle } from "lucide-react";
 import { useState } from "react";
 import { handleAuthError, handleAuthSuccess } from "../utils/auth-utils";
 import { passwordSchema } from "../utils/schema";
+import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute("/signup")({
   component: SignupForm,
@@ -90,8 +91,9 @@ function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex items-center justify-center px-4 py-8">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex flex-col items-center gap-4 gradient-bg ">
+      <Navbar />
+      <div className="max-w-md w-full p-2">
         <div className="glass-effect rounded-2xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">

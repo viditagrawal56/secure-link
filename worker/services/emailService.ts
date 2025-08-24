@@ -10,6 +10,7 @@ export class EmailService {
   async sendVerificationEmail(visitorEmail: string, verificationUrl: string) {
     try {
       const { data, error } = await this.resend.emails.send({
+        // TODO: change the from to the domain name once purchased
         from: "onboarding@resend.dev",
         to: visitorEmail,
         subject: "Your Magic Link for URL Access",
@@ -50,6 +51,7 @@ export class EmailService {
   ) {
     try {
       const { data, error } = await this.resend.emails.send({
+        // TODO: change the from to the domain name once purchased
         from: "onboarding@resend.dev",
         to: ownerEmail,
         subject: "Your shortened URL was accessed",
