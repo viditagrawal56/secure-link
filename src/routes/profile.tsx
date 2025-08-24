@@ -1,26 +1,20 @@
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useRouter,
-} from "@tanstack/react-router";
-import { getSession, signOut, useSession } from "../lib/auth-client";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { getSession, useSession } from "../lib/auth-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
   Copy,
   ExternalLink,
   Trash2,
-  LogOut,
   Link2,
   Unlock,
   Lock,
   Plus,
   Check,
-  Home,
 } from "lucide-react";
 import { queryClient } from "../lib/query-client";
 import { useState } from "react";
+import Navbar from "../components/Navbar";
 
 export const Route = createFileRoute("/profile")({
   component: Profile,
@@ -41,7 +35,6 @@ interface ShortUrl {
 
 function Profile() {
   const { data: session, isPending, error } = useSession();
-  const router = useRouter();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const { data: urls = [], refetch } = useQuery<ShortUrl[]>({
@@ -76,15 +69,6 @@ function Profile() {
       toast.error(error.message);
     },
   });
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      router.navigate({ to: "/signin" });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
 
   const handleDelete = (id: string) => {
     if (window.confirm("Are you sure you want to delete this URL?")) {
@@ -130,36 +114,13 @@ function Profile() {
     );
   }
 
-  const { user } = session;
   const total = urls.length;
   const protectedCount = urls.filter((url) => url.isProtected).length;
   const publicCount = total - protectedCount;
   return (
-    <div className="min-h-screen py-8 sm:py-12 px-2 sm:px-4 text-white">
-      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-10">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-          <h1 className="text-2xl sm:text-4xl font-bold text-white bg-clip-text">
-            Welcome, {user.name || "User"}
-          </h1>
-          <div className="flex gap-2 mt-2 sm:mt-0">
-            <Link
-              to="/"
-              className="flex items-center px-3 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition text-sm sm:text-base"
-            >
-              <Home className="w-4 h-4 mr-2" />
-              Home
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center px-3 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition text-sm sm:text-base"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </button>
-          </div>
-        </div>
-
+    <div className="min-h-screen flex flex-col gap-4 items-center text-white">
+      <Navbar />
+      <div className="max-w-7xl w-full p-2 space-y-8 sm:space-y-10">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           <div className="glass-effect p-4 sm:p-6 rounded-lg flex items-center space-x-4">

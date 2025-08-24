@@ -15,8 +15,8 @@ export class CacheService {
   private URL_PREFIX = "url:";
   private HOT_URL_PREFIX = "hot:";
   private ACCESS_COUNT_PREFIX = "access_count:";
-  private URL_TTL = 3600; // 1 hour
-  private HOT_URL_TTL = 7200; // 2 hours
+  private URL_TTL = 7200; // 2 hour
+  private HOT_URL_TTL = 14400; // 4 hours
 
   constructor(kvNamespace: KVNamespace) {
     this.kv = kvNamespace;
